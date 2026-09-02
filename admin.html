@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Üniversite Kısayolları — Yönetim Paneli</title>
+<style>
+  :root{
+    --bg:#f6f5f1; --card:#ffffff; --ink:#20242b; --muted:#6b7078;
+    --line:#e2ddd0; --line2:#cfc9ba; --accent:#1a3fd0; --danger:#b3202f;
+    --ok:#0a7f37;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#16181c; --card:#1e2127; --ink:#e9e7e1; --muted:#9aa0a9;
+      --line:#31343c; --line2:#454a53; --accent:#6d8bff; --danger:#ff6f7d; --ok:#3ad787;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.45;
+  }
+  a{color:var(--accent);}
+  .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0;min-height:100vh;}
+  @media (max-width:900px){.wrap{grid-template-columns:1fr;}}
+
+  .editor{padding:22px clamp(16px,3vw,32px) 120px;overflow:auto;}
+  .preview{
+    position:sticky;top:0;height:100vh;border-left:1px solid var(--line);
+    background:var(--card);display:flex;flex-direction:column;
+  }
+  @media (max-width:900px){.preview{position:static;height:70vh;border-left:0;border-top:1px solid var(--line);}}
+  .preview h2{margin:0;padding:12px 16px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);}
+  .preview iframe{flex:1;width:100%;border:0;background:#fff;}
+
+  h1{font-size:20px;margin:0 0 4px;}
+  .lead{color:var(--muted);margin:0 0 18px;}
+  h1 + .lead{margin-top:2px;}
+
+  .banner{
+    background:color-mix(in srgb,var(--accent) 12%,transparent);
+    border:1px solid var(--accent);border-radius:10px;padding:12px 14px;margin:0 0 18px;
+    display:none;gap:10px;align-items:center;flex-wrap:wrap;
+  }
+  .banner.on{display:flex;}
+
+  fieldset{border:1px solid var(--line);border-radius:10px;margin:0 0 16px;padding:14px;background:var(--card);}
+  legend{padding:0 6px;font-weight:600;color:var(--muted);font-size:12px;letter-spacing:.08em;text-transform:uppercase;}
+  label.f{display:block;margin:0 0 10px;}
+  label.f span{display:block;font-size:12px;color:var(--muted);margin-bottom:3px;}
+  input[type=text],input[type=url],textarea,select{
+    width:100%;font:inherit;color:var(--ink);background:var(--bg);
+    border:1px solid var(--line2);border-radius:7px;padding:7px 9px;
+  }
+  textarea{resize:vertical;min-height:52px;}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px;}
+
+  .group{border:1px solid var(--line);border-radius:10px;background:var(--card);margin:0 0 14px;padding:12px;}
+  .group-top{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;}
+  .group-top input[type=color]{width:38px;height:34px;padding:0;border:1px solid var(--line2);border-radius:7px;background:none;cursor:pointer;}
+  .group-top .gname{flex:1;min-width:160px;}
+  .group-top .hex{width:92px;font-family:ui-monospace,Consolas,monospace;}
+
+  table.links{width:100%;border-collapse:collapse;}
+  table.links th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:4px 6px;font-weight:600;}
+  table.links td{padding:3px 6px;vertical-align:top;}
+  table.links td.lbl{width:34%;}
+  table.links td.url{width:40%;}
+  table.links td.tag{width:14%;}
+  table.links td.act{width:12%;white-space:nowrap;}
+
+  button{font:inherit;cursor:pointer;border-radius:7px;border:1px solid var(--line2);background:var(--card);color:var(--ink);padding:6px 10px;}
+  button:hover{border-color:var(--muted);}
+  button.mini{padding:3px 7px;font-size:12px;}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
+  button.danger{color:var(--danger);border-color:transparent;background:transparent;}
+  button.danger:hover{border-color:var(--danger);}
+  button.ghost{background:transparent;}
+
+  .rowbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+
+  .bar{
+    position:fixed;left:0;right:50%;bottom:0;background:var(--card);border-top:1px solid var(--line);
+    padding:10px clamp(16px,3vw,32px);display:flex;gap:10px;flex-wrap:wrap;align-items:center;z-index:5;
+  }
+  @media (max-width:900px){.bar{right:0;}}
+  .bar .msg{color:var(--muted);font-size:12px;min-height:1em;}
+  .bar .msg.ok{color:var(--ok);}
+  .bar .msg.err{color:var(--danger);}
+  .spacer{flex:1;}
+  .hidden{display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="editor">
+    <h1>Üniversite Kısayolları — Yönetim Paneli</h1>
+    <p class="lead">Baglantilari buradan duzenle. Degisiklikler <b>Chrome hesabinla senkron</b> saklanir; ayni hesapla girdigin her Chrome'da gecerli olur. Ayrica <b>Duz HTML indir</b> ile her yerde acilabilen tek dosya alabilirsin.</p>
+
+    <div class="banner" id="banner">
+      <span id="banner-text"></span>
+      <button type="button" id="banner-adopt">Varsayilan listeye don</button>
+    </div>
+
+    <fieldset>
+      <legend>Genel</legend>
+      <label class="f"><span>Baslik</span><input type="text" id="f-title"></label>
+      <label class="f"><span>Ust satir (kicker)</span><input type="text" id="f-kicker"></label>
+      <label class="f"><span>Aciklama</span><textarea id="f-dek"></textarea></label>
+      <label class="f"><span>Alt not</span><input type="text" id="f-foot"></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Gruplar</legend>
+      <div id="groups"></div>
+      <button type="button" id="add-group" class="ghost">+ Grup ekle</button>
+    </fieldset>
+
+    <fieldset>
+      <legend>Yedek / Tasima</legend>
+      <div class="rowbtns">
+        <button type="button" id="export-json">Ayarlari JSON indir</button>
+        <button type="button" id="import-json">JSON'dan yukle</button>
+        <input type="file" id="file-json" accept="application/json,.json" class="hidden">
+      </div>
+    </fieldset>
+  </div>
+
+  <div class="preview">
+    <h2>Onizleme — indirilecek duz HTML ile ayni</h2>
+    <iframe id="preview" title="Onizleme"></iframe>
+  </div>
+</div>
+
+<div class="bar">
+  <button type="button" id="save" class="primary">Kaydet</button>
+  <button type="button" id="download-html">Duz HTML indir</button>
+  <button type="button" id="copy-html">HTML'i kopyala</button>
+  <button type="button" id="reset" class="ghost">Varsayilan listeye don</button>
+  <span class="spacer"></span>
+  <span class="msg" id="msg"></span>
+  <datalist id="tags">
+    <option value="giris"></option><option value="pdf"></option><option value="form"></option>
+    <option value="site"></option><option value="liste"></option><option value="katalog"></option>
+    <option value="arsiv"></option>
+  </datalist>
+</div>
+
+<script src="defaults.js"></script>
+<script src="render.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

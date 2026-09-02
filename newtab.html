@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yeni Sekme</title>
+<link rel="stylesheet" href="directory.css">
+<style>
+  #kd-banner{
+    max-width:1060px;margin:0 auto;padding:10px clamp(16px,4vw,48px) 0;
+    display:none;align-items:center;gap:12px;flex-wrap:wrap;
+    font-family:system-ui,"Segoe UI",Roboto,sans-serif;font-size:.82rem;color:var(--ink-soft);
+  }
+  #kd-banner.on{display:flex;}
+  #kd-banner b{color:var(--ink);}
+  #kd-banner button{
+    font:inherit;cursor:pointer;border:1px solid var(--hair-strong);background:transparent;color:var(--ink);
+    border-radius:999px;padding:.3rem .7rem;
+  }
+  #kd-banner button:hover{border-color:var(--ink-soft);}
+</style>
+</head>
+<body>
+  <div id="kd-banner">
+    <span><b>Bolum varsayilan listesi guncellendi.</b> Kendi duzenini koruyorsun; yeni listeyi almak istersen yonetim panelinden alabilirsin.</span>
+    <button id="kd-banner-open" type="button">Yonetim paneli</button>
+    <button id="kd-banner-hide" type="button">Kapat</button>
+  </div>
+  <main id="app"></main>
+
+  <script src="defaults.js"></script>
+  <script src="render.js"></script>
+  <script src="newtab.js"></script>
+</body>
+</html>

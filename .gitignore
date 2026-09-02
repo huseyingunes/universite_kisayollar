@@ -1,0 +1,20 @@
+# --- İşletim sistemi ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Editör / IDE ---
+.vscode/
+.idea/
+*.swp
+*~
+
+# --- Paketleme çıktısı (mağazaya yüklenen ZIP) ---
+*.zip
+
+# --- Yönetim panelinden indirilen dosyalar / önizleme ---
+# (kaynak değil, üretilen çıktı)
+*-ayarlar.json
+universite-kisayollari.html
+_pv*.html
+_preview/
